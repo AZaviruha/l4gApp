@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset='utf-8'>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>l4gApp playground</title>
+
+		<script src="../packages/requirejs/require.js"></script>
+		<script>
+			require.config({
+				baseUrl: '../lib',
+				paths: {
+					'packages/jquery': '../packages/jquery/dist/jquery',
+					'packages/backbone': '../packages/backbone/backbone',
+					'packages/underscore': '../packages/underscore/underscore'
+				},
+				shim: {
+					'packages/backbone': {
+						deps: ['packages/underscore', 'packages/jquery'],
+						exports: 'Backbone'
+					},
+					'packages/jquery': {
+						exports: 'jQuery'
+					},
+					'packages/underscore': {
+						exports: '_'
+					}
+				}
+			});
+
+			require(['application'], function(l4gApp) {
+				l4gApp.backend
+					.on('working-mode', function() {
+						console.log('working-mode', arguments);
+					})
+					.on('started', function(message) {
+						console.log('started', arguments);
+					})
+					.on('backend-log', function(id, message) {
+						console.log('%c[%s]', 'color:#fff;background:#999', id, message);
+					});
+
+				l4gApp.init({
+					eventHandlers: {
+						receivedHandler: function(eventName, json) {
+							var message = {};
+
+							// Парсим json в объект.
+							try {
+								message = JSON.parse(json);
+							} catch(error) {
+								console.error(error);
+							}
+							console.log('react on', eventName, message);
+						}
+					}
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div id="PluginHere"></div>
+	</body>
+</html>
